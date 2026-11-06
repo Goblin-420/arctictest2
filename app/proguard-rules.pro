@@ -1,0 +1,3 @@
+-keep class com.example.arcticplex.data.** { *; }
+-dontwarn okhttp3.**
+-dontwarn retrofit2.**
