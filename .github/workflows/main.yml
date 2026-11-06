@@ -1,0 +1,40 @@
+name: Build ArcticPlex FireTV APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.9'
+
+      - name: Build Debug APK
+        run: |
+          if [ -f "settings.gradle.kts" ]; then
+            gradle assembleDebug --no-daemon
+          elif [ -f "ArcticPlex/settings.gradle.kts" ]; then
+            cd ArcticPlex && gradle assembleDebug --no-daemon
+          else
+            echo "Error: Could not find settings.gradle.kts!"
+            exit 1
+          fi
+
+      - name: Upload Compiled FireTV APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ArcticPlex-FireTV-debug-apk
+          path: "**/app/build/outputs/apk/debug/app-debug.apk"
